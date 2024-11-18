@@ -51,7 +51,7 @@ function Login() {
           <div className="flex-grow border-t border-slate-300"></div>
         </div>
 
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg shadow-lg transition-all">
+        <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg shadow-lg transition-all w-full">
           LOGIN WITH GOOGLE
         </button>
         <Link
