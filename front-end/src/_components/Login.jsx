@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function Login() {
   return (
-    <div className="border-4 border-slate-200 bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+    <div className="border-4 border-slate-200 bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto mt-5">
       <h1 className="text-2xl text-slate-700 text-center font-extrabold mb-6">
         Welcome to Momentum
       </h1>
@@ -61,7 +61,7 @@ function Login() {
           Forget your password?
         </Link>
         <Link
-          href="#"
+          href="/sign-up"
           className="text-sm text-blue-500 font-semibold underline hover:text-blue-900"
         >
           Not registered?, Sign up.
