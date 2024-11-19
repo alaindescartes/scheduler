@@ -1,9 +1,9 @@
-const express = require("express");
+import express from "express";
+import { checkPassword, hashPassword } from "../../auth/authHelper.js";
+import appError from "../../error.js";
+import User from "../userSchema.js";
+
 const router = express.Router();
-const { checkPassword, hashPassword } = require("../../auth/authHelper");
-const appError = require("../../error");
-const User = require("../userSchema");
-const { isAuthenticated } = require("../../auth/authHelper");
 
 router.post("/login", async (req, res, next) => {
   try {
@@ -52,6 +52,13 @@ router.post("/register", async (req, res, next) => {
       return;
     }
 
+    //check if user exists
+    const user = await User.findOne({ lastname, firstname });
+    if (user) {
+      next(new appError("user already exists", 400));
+      return;
+    }
+
     const hashed_password = hashPassword(password);
     const newUser = new User({
       password: hashed_password,
@@ -60,7 +67,11 @@ router.post("/register", async (req, res, next) => {
       username: username,
     });
     //save the user
-    await newUser.save();
+    try {
+      await newUser.save();
+    } catch (err) {
+      throw new Error("Error saving user: " + err.message);
+    }
 
     const user_info = {
       firstname: newUser.firstname,
@@ -93,5 +104,4 @@ router.post("/logout", async (req, res, next) => {
     return res.status(200).json({ message: "User logged out successfully" });
   });
 });
-
-module.exports = router;
+export default router;

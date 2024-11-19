@@ -1,4 +1,6 @@
 import localFont from "next/font/local";
+
+import StoreProvider from "@/store/StoreProvider";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -23,7 +25,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
   );

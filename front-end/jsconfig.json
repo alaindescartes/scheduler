@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "baseUrl": "src", // Set the base directory to "src"
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["*"] // Map "@/" to all files within "src"
     }
   }
 }

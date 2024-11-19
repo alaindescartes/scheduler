@@ -1,12 +1,20 @@
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, ".env") });
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import session from "express-session";
+import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
+import userAuthRouter from "./user/userRoutes/userAuth.js";
+
+// Define __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configure dotenv
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 const app = express();
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-const userAuthRouter = require("./user/userRoutes/userAuth");
 
 //Middleware
 app.use(cors());
