@@ -27,6 +27,7 @@ function Register() {
   //handle input change
   function handleChange(e) {
     dispatch(resetErrorState());
+    dispatch(resetLoadingState());
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -62,6 +63,7 @@ function Register() {
       if (response.status === 200) {
         router.push("/login");
         dispatch(resetLoadingState());
+        dispatch(resetErrorState());
       } //redirect to the home page
     } catch (err) {
       if (err.response) {
@@ -77,6 +79,8 @@ function Register() {
         console.error("Unexpected error:", err.message);
         dispatch(setErrorState("An unexpected error occurred."));
       }
+    }finally {
+      dispatch(resetLoadingState());
     }
   }
 
