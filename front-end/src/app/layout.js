@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 
 import StoreProvider from "@/store/StoreProvider";
 import "./globals.css";
+import Header from "@/_components/Header.jsx";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,7 +26,12 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider>{children}</StoreProvider>
+      <StoreProvider>
+          <div className="flex flex-col items-center justify-center ">
+              <Header />
+              {children}
+          </div>
+      </StoreProvider>
       </body>
     </html>
   );
