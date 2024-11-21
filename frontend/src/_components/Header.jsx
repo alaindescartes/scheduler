@@ -14,7 +14,7 @@ function Header() {
   return (
     <header className="bg-slate-800 text-white flex items-center justify-between py-4 px-8 shadow-lg">
       {/* Logo Section */}
-      <div className="flex items-center space-x-2 text-2xl font-extrabold">
+      <div className="flex items-center space-x-1 text-2xl font-extrabold">
         <span className="text-blue-400">MOMENTUM</span>
         <FaPlus className="text-blue-400" />
       </div>
