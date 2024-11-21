@@ -7,12 +7,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import axios from "axios";
 import { useState } from "react";
 import { FaBars, FaPlus } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  /**
+   * API that handles user logout.
+   *
+   * Sends a POST request to the logout endpoint. If successful, navigates the user to the login page
+   * and displays a success message. If an error occurs, it logs the error and displays a failure message.
+   *
+   * @async
+   * @function handleLogout
+   * @returns {Promise<void>} - Resolves when logout completes.
+   */
+  async function handleLogout() {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/auth/logout`
+      );
+      if (response.status === 200) {
+        toast("logged out successfully", {
+          style: { background: "green", color: "white" },
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      toast("There was a problem while logging out, try again!", {
+        style: { background: "red", color: "white" },
+      });
+      console.log("error during logout: ", error);
+    }
+  }
 
   return (
     <header className="bg-slate-800 text-white flex items-center justify-between py-4 px-6 md:px-8 shadow-lg">
@@ -151,7 +183,10 @@ function Header() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="p-0 bg-transparent focus:bg-transparent hover:bg-transparent">
-              <Button className="w-full text-left text-red-500 hover:bg-red-100 hover:text-black">
+              <Button
+                className="w-full text-left text-red-500 hover:bg-red-100 hover:text-black"
+                onClick={handleLogout}
+              >
                 Log Out
               </Button>
             </DropdownMenuItem>
