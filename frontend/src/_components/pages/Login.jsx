@@ -13,6 +13,7 @@ import {
   resetLoadingState,
   setLoadingState,
 } from "../../store/loading/loadingSlice.js";
+import { setUser } from "../../store/user/userSlice.js";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,8 @@ function Login() {
   const error = useSelector((state) => state.error.error);
   const errorMessage = useSelector((state) => state.error.errorMessage);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // React Router navigation
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user.user);
 
   // Handle input change
   function handleChange(e) {
@@ -57,7 +59,9 @@ function Login() {
         formData
       );
       if (response.status === 200) {
+        dispatch(setUser(response.data.user));
         navigate("/homepage");
+        console.log("user info: ", user);
         dispatch(resetLoadingState());
         dispatch(resetErrorState());
         toast("Logged in successfully", {
