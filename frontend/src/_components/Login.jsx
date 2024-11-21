@@ -51,7 +51,7 @@ function Login() {
           formData
       );
       if (response.status === 200) {
-        navigate("/"); // Redirect using React Router
+        navigate("/homepage");
         dispatch(resetLoadingState());
         dispatch(resetErrorState());
         toast("Logged in successfully", {
