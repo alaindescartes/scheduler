@@ -1,92 +1,90 @@
 // import dotenv from 'dotenv';
 // dotenv.config({path:"../frontend/.env"});
-import axios from "axios";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // React Router for navigation
-import { toast } from "sonner";
-import {
-  resetErrorState,
-  setErrorState,
-} from "../../store/error/errorSlice.js";
+import axios from "axios"
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom" // React Router for navigation
+import { toast } from "sonner"
+import { resetErrorState, setErrorState } from "../../store/error/errorSlice.js"
 import {
   resetLoadingState,
   setLoadingState,
-} from "../../store/loading/loadingSlice.js";
-import { setUser } from "../../store/user/userSlice.js";
+} from "../../store/loading/loadingSlice.js"
+import { setUser } from "../../store/user/userSlice.js"
 
 function Login() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-  });
-  const isLoading = useSelector((state) => state.loading.isLoading);
-  const error = useSelector((state) => state.error.error);
-  const errorMessage = useSelector((state) => state.error.errorMessage);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
+  })
+  const isLoading = useSelector((state) => state.loading.isLoading)
+  const error = useSelector((state) => state.error.error)
+  const errorMessage = useSelector((state) => state.error.errorMessage)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const user = useSelector((state) => state.user.user)
 
   // Handle input change
   function handleChange(e) {
-    dispatch(resetErrorState());
-    dispatch(resetLoadingState());
-    const { name, value } = e.target;
+    dispatch(resetErrorState())
+    dispatch(resetLoadingState())
+    const { name, value } = e.target
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
+    }))
   }
 
   // Validate form inputs
   function validateForm() {
-    return !formData.username || !formData.password;
+    return !formData.username || !formData.password
   }
 
   // Handle form submission
   async function handleFormSubmission(e) {
-    dispatch(setLoadingState(true));
-    e.preventDefault();
+    dispatch(setLoadingState(true))
+    e.preventDefault()
 
     // Validate the form
     if (validateForm()) {
-      dispatch(setErrorState("All fields are required"));
-      return;
+      dispatch(setErrorState("All fields are required"))
+      return
     }
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/auth/login`,
-        formData
-      );
+        formData,
+        { withCredentials: true }
+      )
       if (response.status === 200) {
-        dispatch(setUser(response.data.user));
-        navigate("/homepage");
-        console.log("user info: ", user);
-        dispatch(resetLoadingState());
-        dispatch(resetErrorState());
+        dispatch(setUser(response.data.user))
+        navigate("/homepage")
+        console.log("user info: ", user)
+        dispatch(resetLoadingState())
+        dispatch(resetErrorState())
         toast("Logged in successfully", {
           style: {
             color: "white",
             background: "green",
           },
-        });
+        })
       }
     } catch (err) {
       if (err.response) {
         // Server responded with an error
-        console.error("Server error:", err.response.data.message);
-        dispatch(setErrorState(err.response.data.message));
+        console.error("Server error:", err.response.data.message)
+        dispatch(setErrorState(err.response.data.message))
       } else if (err.request) {
         // Request was made but no response received
-        console.error("Network error:", err.request);
-        dispatch(setErrorState("Network error. Please try again."));
+        console.error("Network error:", err.request)
+        dispatch(setErrorState("Network error. Please try again."))
       } else {
         // Other errors
-        console.error("Unexpected error:", err.message);
-        dispatch(setErrorState("An unexpected error occurred."));
+        console.error("Unexpected error:", err.message)
+        dispatch(setErrorState("An unexpected error occurred."))
       }
     } finally {
-      dispatch(resetLoadingState());
+      dispatch(resetLoadingState())
     }
   }
 
@@ -169,7 +167,7 @@ function Login() {
         </a>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

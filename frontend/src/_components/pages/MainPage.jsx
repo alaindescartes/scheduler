@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import React from "react";
-import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button"
+import React from "react"
+import { Link } from "react-router-dom"
 
 function MainPage() {
   return (
@@ -47,7 +47,7 @@ function MainPage() {
           </ol>
         </div>
         <Button className="mt-6 bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded-lg">
-          Logout
+          CLOCK IN
         </Button>
       </section>
 
@@ -88,7 +88,7 @@ function MainPage() {
         </section>
       </div>
     </main>
-  );
+  )
 }
 
-export default MainPage;
+export default MainPage

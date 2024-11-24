@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,16 +6,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import axios from "axios";
-import { useState } from "react";
-import { FaBars, FaPlus } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+} from "@/components/ui/dropdown-menu"
+import axios from "axios"
+import { useState } from "react"
+import { FaBars, FaPlus } from "react-icons/fa"
+import { Link, useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 
 function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   /**
    * API that handles user logout.
@@ -31,18 +31,18 @@ function Header() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/auth/logout`
-      );
+      )
       if (response.status === 200) {
         toast("logged out successfully", {
           style: { background: "green", color: "white" },
-        });
-        navigate("/login");
+        })
+        navigate("/login")
       }
     } catch (error) {
       toast("There was a problem while logging out, try again!", {
         style: { background: "red", color: "white" },
-      });
-      console.log("error during logout: ", error);
+      })
+      console.log("error during logout: ", error)
     }
   }
 
@@ -194,7 +194,7 @@ function Header() {
         </DropdownMenu>
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header
