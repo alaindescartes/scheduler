@@ -1,12 +1,9 @@
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
-import MainOutlet from "./_components/outlets/MainOutlet.jsx";
-import Login from "./_components/pages/Login.jsx";
-import MainPage from "./_components/pages/MainPage.jsx";
-import Register from "./_components/pages/Register.jsx";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
+import MainOutlet from "./_components/outlets/MainOutlet.jsx"
+import Login from "./_components/pages/Login.jsx"
+import MainPage from "./_components/pages/MainPage.jsx"
+import Register from "./_components/pages/Register.jsx"
+import ProtectedRoutes from "./_components/outlets/ProtectedRoutes.jsx"
 
 const router = createBrowserRouter([
   {
@@ -29,15 +26,19 @@ const router = createBrowserRouter([
     element: <MainOutlet />,
     children: [
       {
-        element: <MainPage />,
+        element: (
+          <ProtectedRoutes>
+            <MainPage />
+          </ProtectedRoutes>
+        ),
         index: true,
       },
     ],
   },
-]);
+])
 
 function App() {
-  return <RouterProvider router={router} />;
+  return <RouterProvider router={router} />
 }
 
-export default App;
+export default App

@@ -12,10 +12,13 @@ import { useState } from "react"
 import { FaBars, FaPlus } from "react-icons/fa"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+import { logout } from "../store/user/userSlice"
+import { useDispatch } from "react-redux"
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   /**
    * API that handles user logout.
@@ -30,12 +33,14 @@ function Header() {
   async function handleLogout() {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/auth/logout`
+        `${import.meta.env.VITE_BASE_URL}/auth/logout`,
+        { withCredentials: true }
       )
       if (response.status === 200) {
         toast("logged out successfully", {
           style: { background: "green", color: "white" },
         })
+        dispatch(logout())
         navigate("/login")
       }
     } catch (error) {
@@ -99,7 +104,10 @@ function Header() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="p-0 bg-transparent focus:bg-transparent hover:bg-transparent">
-              <Button className="w-full text-left text-red-500 hover:bg-red-100 hover:text-black">
+              <Button
+                onClick={handleLogout}
+                className="w-full text-left text-red-500 hover:bg-red-100 hover:text-black"
+              >
                 Log Out
               </Button>
             </DropdownMenuItem>
