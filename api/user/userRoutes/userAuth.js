@@ -108,7 +108,6 @@ router.post("/logout", async (req, res, next) => {
 })
 
 router.get("/check-session", (req, res) => {
-  console.log("check-session: ", req.session)
   if (req.session && req.session.user) {
     res.status(200).json({ user: req.session.user })
   } else {

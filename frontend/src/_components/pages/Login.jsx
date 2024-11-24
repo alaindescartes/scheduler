@@ -82,6 +82,8 @@ function Login() {
         console.error("Unexpected error:", err.message)
         dispatch(setErrorState("An unexpected error occurred."))
       }
+    } finally {
+      dispatch(resetLoadingState())
     }
   }
 

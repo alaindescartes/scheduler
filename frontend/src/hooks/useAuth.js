@@ -18,7 +18,6 @@ function useAuth() {
           }
         )
 
-        if (response) console.log("user session: ", response.data)
         if (response.status !== 200) {
           navigate("/login")
           dispatch(logout())

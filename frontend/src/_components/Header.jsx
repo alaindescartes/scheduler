@@ -14,11 +14,14 @@ import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { logout } from "../store/user/userSlice"
 import { useDispatch } from "react-redux"
+import { persistor } from "../store/store"
+import { useSelector } from "react-redux"
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.user?.user?.details)
 
   /**
    * API that handles user logout.
@@ -37,11 +40,12 @@ function Header() {
         { withCredentials: true }
       )
       if (response.status === 200) {
+        dispatch(logout())
+        await persistor.purge()
+        navigate("/login")
         toast("logged out successfully", {
           style: { background: "green", color: "white" },
         })
-        dispatch(logout())
-        navigate("/login")
       }
     } catch (error) {
       toast("There was a problem while logging out, try again!", {
@@ -71,7 +75,7 @@ function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button className="py-2 px-4 rounded-full bg-blue-500 hover:bg-blue-600 transition-all text-white">
-              User
+              {`${user.firstname[0].toUpperCase()}${user.lastname[0].toUpperCase()}`}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-slate-700 text-slate-300 rounded-lg shadow-lg">
@@ -158,7 +162,7 @@ function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button className="py-2 px-4 rounded-full bg-blue-500 hover:bg-blue-600 transition-all text-white">
-              User
+              {`${user.firstname[0].toUpperCase()}${user.lastname[0].toUpperCase()}`}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-slate-700 text-slate-300 rounded-lg shadow-lg">
