@@ -40,6 +40,7 @@ router.post("/login", async (req, res, next) => {
       .status(200)
       .json({ message: "User logged in successfully", user: logged_in_user })
   } catch (err) {
+    console.log("error while logging in :" + err)
     next(err)
   }
 })
@@ -107,7 +108,7 @@ router.post("/logout", async (req, res, next) => {
 })
 
 router.get("/check-session", (req, res) => {
-  console.log("session: " + req.session.user)
+  console.log("check-session: ", req.session)
   if (req.session && req.session.user) {
     res.status(200).json({ user: req.session.user })
   } else {

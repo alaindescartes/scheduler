@@ -59,7 +59,6 @@ function Login() {
       if (response.status === 200) {
         dispatch(setUser(response.data.user))
         navigate("/homepage")
-        console.log("user info: ", user)
         dispatch(resetLoadingState())
         dispatch(resetErrorState())
         toast("Logged in successfully", {
@@ -83,8 +82,6 @@ function Login() {
         console.error("Unexpected error:", err.message)
         dispatch(setErrorState("An unexpected error occurred."))
       }
-    } finally {
-      dispatch(resetLoadingState())
     }
   }
 

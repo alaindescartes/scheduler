@@ -6,6 +6,7 @@ import mongoose from "mongoose"
 import path from "path"
 import { fileURLToPath } from "url"
 import userAuthRouter from "./user/userRoutes/userAuth.js"
+import cookieParser from "cookie-parser"
 
 // Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url)
@@ -37,6 +38,7 @@ app.use(
   })
 )
 app.use(express.json())
+//app.use(cookieParser)
 
 //user auth routes
 app.use("/auth", userAuthRouter)

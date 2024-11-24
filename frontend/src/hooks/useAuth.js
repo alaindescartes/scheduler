@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useSelector, useDispatch } from "react-redux"
 import { logout } from "../store/user/userSlice"
+import { setUser } from "../store/user/userSlice"
 
 function useAuth() {
   const navigate = useNavigate()
-  const isAuthenticated = useSelector(
-    (state) => state.user.user.isAuthenticated
-  )
   const dispatch = useDispatch()
   useEffect(() => {
     const checkAuth = async () => {
@@ -19,10 +17,15 @@ function useAuth() {
             withCredentials: true,
           }
         )
+
+        if (response) console.log("user session: ", response.data)
         if (response.status !== 200) {
           navigate("/login")
           dispatch(logout())
         }
+        //add the user details to the userSlice
+        let user = response.data.user
+        dispatch(setUser(user))
       } catch (error) {
         if (error.response && error.response.status === 401) {
           navigate("/login")

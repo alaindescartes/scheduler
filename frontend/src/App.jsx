@@ -4,6 +4,7 @@ import Login from "./_components/pages/Login.jsx"
 import MainPage from "./_components/pages/MainPage.jsx"
 import Register from "./_components/pages/Register.jsx"
 import ProtectedRoutes from "./_components/outlets/ProtectedRoutes.jsx"
+import useAuth from "./hooks/useAuth.js"
 
 const router = createBrowserRouter([
   {
