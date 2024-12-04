@@ -6,6 +6,8 @@ import mongoose from "mongoose"
 import path from "path"
 import { fileURLToPath } from "url"
 import userAuthRouter from "./user/userRoutes/userAuth.js"
+import residenceRouter from "./residence/residenceRoute/residence.js"
+import { isAuthenticated } from "./auth/authHelper.js"
 import cookieParser from "cookie-parser"
 
 // Define __dirname for ES Modules
@@ -40,8 +42,9 @@ app.use(
 app.use(express.json())
 //app.use(cookieParser)
 
-//user auth routes
+//routes
 app.use("/auth", userAuthRouter)
+app.use("/res", isAuthenticated, residenceRouter)
 
 //connect to the db()
 mongoose

@@ -27,12 +27,22 @@ const router = createBrowserRouter([
     element: <MainOutlet />,
     children: [
       {
+        //Main page route
         element: (
           <ProtectedRoutes>
             <MainPage />
           </ProtectedRoutes>
         ),
         index: true,
+      },
+      {
+        //residence route
+        element: (
+          <ProtectedRoutes>
+            <div>Residences</div>
+          </ProtectedRoutes>
+        ),
+        path: "residence",
       },
     ],
   },

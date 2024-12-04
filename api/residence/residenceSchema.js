@@ -1,15 +1,20 @@
-const residenceSchema = new mongoose.Schema({
+import mongoose from "mongoose"
+const residenceSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     location: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     description: {
-        type: String
-    }
-}, { timestamps: true });
+      type: String,
+    },
+  },
+  { timestamps: true }
+)
 
-module.exports = mongoose.model('Residence', residenceSchema);
+const Residence = mongoose.model("Residence", residenceSchema)
+export default Residence
