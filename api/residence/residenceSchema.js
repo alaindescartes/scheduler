@@ -12,6 +12,12 @@ const residenceSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    images: [
+      {
+        url: { type: String, required: true },
+        public_id: { type: String, required: true },
+      },
+    ],
   },
   { timestamps: true }
 )
