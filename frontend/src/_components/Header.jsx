@@ -22,8 +22,8 @@ function Header() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user?.user?.details) || {
-    firstname: "",
-    lastname: "",
+    firstname: "Guest",
+    lastname: "User",
   }
 
   /**
