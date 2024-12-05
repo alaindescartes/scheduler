@@ -4,7 +4,7 @@ import Login from "./_components/pages/Login.jsx"
 import MainPage from "./_components/pages/MainPage.jsx"
 import Register from "./_components/pages/Register.jsx"
 import ProtectedRoutes from "./_components/outlets/ProtectedRoutes.jsx"
-import useAuth from "./hooks/useAuth.js"
+import Residences from "./_components/pages/Residences.jsx"
 
 const router = createBrowserRouter([
   {
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
         //residence route
         element: (
           <ProtectedRoutes>
-            <div>Residences</div>
+            <Residences />
           </ProtectedRoutes>
         ),
         path: "residence",

@@ -21,7 +21,10 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const user = useSelector((state) => state.user?.user?.details)
+  const user = useSelector((state) => state.user?.user?.details) || {
+    firstname: "",
+    lastname: "",
+  }
 
   /**
    * API that handles user logout.
@@ -162,7 +165,9 @@ function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button className="py-2 px-4 rounded-full bg-blue-500 hover:bg-blue-600 transition-all text-white">
-              {`${user?.firstname[0].toUpperCase()}${user?.lastname[0].toUpperCase()}`}
+              {`${user?.firstname?.[0]?.toUpperCase() || ""}${
+                user?.lastname?.[0]?.toUpperCase() || ""
+              }`}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-slate-700 text-slate-300 rounded-lg shadow-lg">
