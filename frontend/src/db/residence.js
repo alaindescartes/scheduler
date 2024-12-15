@@ -32,7 +32,6 @@ export const getResidences = async (dispatch) => {
       if (res.length > 0) {
         dispatch(setResidences(res));
       }
-      console.log('Res:', res);
     }
   } catch (error) {
     throw error;

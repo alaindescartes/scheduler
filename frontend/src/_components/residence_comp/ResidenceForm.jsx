@@ -4,7 +4,24 @@ import { setErrorState, resetErrorState } from '@/store/error/errorSlice.js';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { getResidences } from '@/db/residence.js';
+import {
+  resetLoadingState,
+  setLoadingState,
+} from '@/store/loading/loadingSlice.js';
 
+/**
+ * A React form component to add a new residence.
+ *
+ * - Handles the addition of residence details including name, location, description, and images.
+ * - Validates image file uploads for size, type, and count.
+ * - Displays error messages and manages loading state during the submission process.
+ *
+ * @component
+ * @returns {React.ReactElement} The rendered form component.
+ *
+ * @example
+ * <ResidenceForm />
+ */
 function ResidenceForm() {
   const [formData, setFormData] = useState({
     name: '',
@@ -18,6 +35,7 @@ function ResidenceForm() {
   const dispatch = useDispatch();
   const appError = useSelector((state) => state.error.error);
   const message = useSelector((state) => state.error.errorMessage);
+  const loading = useSelector((state) => state.loading.isLoading);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -28,6 +46,20 @@ function ResidenceForm() {
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files); // Get selected files
     setFormData({ ...formData, images: files });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      location: '',
+      description: '',
+      images: [], // Holds uploaded image files
+    });
+    //clear images
+    const fileInput = document.getElementById('images');
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const validateImage = (images) => {
@@ -93,6 +125,7 @@ function ResidenceForm() {
     });
 
     try {
+      dispatch(setLoadingState(true));
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/res/add_residence`,
         formDataToSend,
@@ -103,6 +136,8 @@ function ResidenceForm() {
       );
 
       if (response.status === 200) {
+        await getResidences(dispatch);
+        resetForm();
         toast('Added RenderResidence Successfully', {
           style: {
             backgroundColor: 'green',
@@ -119,6 +154,8 @@ function ResidenceForm() {
         },
       });
       console.error('Error submitting residence data: ', error);
+    } finally {
+      dispatch(resetLoadingState());
     }
   };
 
@@ -126,7 +163,7 @@ function ResidenceForm() {
     <form
       className="max-w-lg mx-auto p-6 bg-white border border-gray-300 rounded-lg shadow-md space-y-4"
       onSubmit={handleSubmit}
-      enctype="multipart/form-data"
+      encType="multipart/form-data"
     >
       <h2 className="text-2xl font-bold text-gray-800">Add Residence</h2>
 
@@ -152,6 +189,7 @@ function ResidenceForm() {
           type="text"
           id="name"
           name="name"
+          value={formData.name}
           placeholder="Enter residence name"
           className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
           onChange={handleChange}
@@ -170,6 +208,7 @@ function ResidenceForm() {
           type="text"
           id="location"
           name="location"
+          value={formData.location}
           placeholder="Enter location"
           className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
           onChange={handleChange}
@@ -225,8 +264,9 @@ function ResidenceForm() {
       <button
         type="submit"
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-all"
+        disabled={loading}
       >
-        Submit
+        {loading ? 'Adding Residence...' : 'Submit'}
       </button>
     </form>
   );
