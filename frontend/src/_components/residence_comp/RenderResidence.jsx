@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog.jsx';
-import ResidenceForm from '@/_components/residence_comp/ResidenceForm.jsx';
 import EditResidence from '@/_components/residence_comp/EditResidence.jsx';
 
 /**
@@ -33,11 +32,12 @@ import EditResidence from '@/_components/residence_comp/EditResidence.jsx';
  *
  * <RenderResidence residence={residence} loading={false} />;
  */
-function RenderResidence({ residence, loading }) {
+function RenderResidence({ residence, loading, deleteFunc }) {
   const imageAddrress =
     'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG91c2V8ZW58MHx8MHx8fDA%3D';
   const userRole =
     useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
+  const isLoading = loading;
 
   if (loading) {
     return (
@@ -100,9 +100,13 @@ function RenderResidence({ residence, loading }) {
             </DialogContent>
           </Dialog>
 
-          <Button className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all">
+          <Button
+            onClick={deleteFunc}
+            disabled={isLoading}
+            className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
+          >
             <FontAwesomeIcon icon={faTrash} className="mr-2" />
-            Delete
+            {isLoading ? 'DELETING...' : 'DELETE'}
           </Button>
         </div>
       )}

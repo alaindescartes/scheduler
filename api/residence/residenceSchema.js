@@ -1,9 +1,11 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 const residenceSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
+      unique: true,
+      index: true,
     },
     location: {
       type: String,
@@ -20,7 +22,7 @@ const residenceSchema = new mongoose.Schema(
     ],
   },
   { timestamps: true }
-)
+);
 
-const Residence = mongoose.model("Residence", residenceSchema)
-export default Residence
+const Residence = mongoose.model('Residence', residenceSchema);
+export default Residence;

@@ -3,7 +3,7 @@ import AppError from '../../error.js';
 import Residence from '../residenceSchema.js';
 import cloudinary from '../../helpers/cloudinary.js';
 import upload from '../../helpers/multer.js';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 
 //inits
 const router = express.Router();
@@ -29,16 +29,17 @@ router.get('/all_residence', async (req, res, next) => {
 
 router.post(
   '/add_residence',
-  upload.array('images'),
+  upload.array('images'), // Multer middleware to handle image uploads
   async (req, res, next) => {
     const { name, location, description } = req.body;
     const files = req.files;
     const uploadFolder = 'Momentum/residences';
 
+    // Validate required fields
     if (!name || !location) {
       return next(
         new AppError(
-          'The name and address of a residence must be provided',
+          'The name and location of a residence must be provided',
           404
         )
       );
@@ -49,7 +50,7 @@ router.post(
     }
 
     try {
-      // Check for duplicates
+      // Check for duplicate residence by name (Ensure "name" is indexed in the schema)
       const existingResidence = await Residence.findOne({ name });
       if (existingResidence) {
         return next(
@@ -60,44 +61,41 @@ router.post(
         );
       }
 
-      // Upload images to Cloudinary
-      const uploadedImages = [];
-      for (const file of files) {
-        try {
-          console.log('Processing File:', file.path);
+      // Upload images to Cloudinary in parallel
+      console.time('Image Uploads');
+      const uploadedImages = await Promise.all(
+        files.map(async (file) => {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: uploadFolder,
           });
-          uploadedImages.push({
+          await fs.unlink(file.path); // Asynchronously delete the temporary file
+          return {
             url: result.secure_url,
             public_id: result.public_id,
-          });
+          };
+        })
+      );
+      console.timeEnd('Image Uploads'); // Log how long uploads take
 
-          // Remove temporary file
-          fs.unlinkSync(file.path);
-        } catch (error) {
-          console.error('Error while uploading image:', error);
-          return next(new AppError('Error while uploading images', 500));
-        }
-      }
-
-      // Create a new residence document
+      // Create and save a new residence document
+      console.time('MongoDB Save');
       const newResidence = new Residence({
         name,
         location,
         description,
         images: uploadedImages,
       });
-
       await newResidence.save();
+      console.timeEnd('MongoDB Save'); // Log how long the database save takes
 
+      // Respond to the client
       res.status(200).json({
         residence: newResidence,
-        message: 'RenderResidence added successfully',
+        message: 'Residence added successfully',
       });
     } catch (error) {
-      console.error('Error while saving new residence:', error);
-      next(new AppError('There was a problem while adding residence', 500));
+      console.error('Error while adding residence:', error);
+      next(new AppError('There was a problem while adding the residence', 500));
     }
   }
 );
@@ -163,5 +161,36 @@ router.patch(
     }
   }
 );
+
+router.delete('/delete_residence/:id', async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    // Find the residence by ID
+    const residence = await Residence.findById(id);
+    if (!residence) {
+      return next(new AppError('Residence not found', 404));
+    }
+
+    //Delete images from Cloudinary
+    try {
+      const imagesToDelete = residence.images.map((image) => image.public_id);
+      const result = await cloudinary.api.delete_resources(imagesToDelete, {
+        invalidate: true,
+      });
+      console.log('Cloudinary deletion result:', result);
+    } catch (error) {
+      console.error('Error while deleting images:', error);
+      return next(new AppError('Error while deleting images', 500));
+    }
+
+    //Delete the residence from the database
+    await Residence.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Residence deleted successfully' });
+  } catch (error) {
+    console.error('Error while deleting residence:', error);
+    return next(new AppError('Error while deleting residence', 500));
+  }
+});
 
 export default router;

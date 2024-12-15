@@ -16,6 +16,8 @@ import {
   resetLoadingState,
   setLoadingState,
 } from '@/store/loading/loadingSlice.js';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 /**
  * Renders a list of residences and provides administrative functionality for managing them.
@@ -57,6 +59,26 @@ function Residences() {
     }
   }, [dispatch, residences.length]);
 
+  const deleteResidence = async (id) => {
+    try {
+      dispatch(setLoadingState(true));
+      const result = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/res/delete_residence/${id}`,
+        { withCredentials: true }
+      );
+      if (result.status === 200) {
+        toast('Residence Deleted', {
+          style: { background: 'green', color: 'white' },
+        });
+        await getResidences(dispatch);
+      }
+    } catch (error) {
+      console.log('Error while deleting residence: ', error);
+    } finally {
+      dispatch(resetLoadingState());
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2 ">
       {userRole === 'admin' && (
@@ -85,6 +107,7 @@ function Residences() {
                 key={res._id}
                 residence={res}
                 loading={loading}
+                deleteFunc={() => deleteResidence(res._id)}
               />
             ))
           ) : (

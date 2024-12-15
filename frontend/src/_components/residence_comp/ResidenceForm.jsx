@@ -8,6 +8,7 @@ import {
   resetLoadingState,
   setLoadingState,
 } from '@/store/loading/loadingSlice.js';
+import imageCompression from 'browser-image-compression';
 
 /**
  * A React form component to add a new residence.
@@ -43,9 +44,27 @@ function ResidenceForm() {
     dispatch(resetErrorState());
   };
 
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files); // Get selected files
-    setFormData({ ...formData, images: files });
+  const handleFileChange = async (event) => {
+    const files = Array.from(event.target.files); // Selected files
+
+    // Compression options
+    const options = {
+      maxSizeMB: 1, // Maximum file size in MB
+      maxWidthOrHeight: 1024, // Maximum width or height of the image
+      useWebWorker: true, // Use web worker for faster compression
+    };
+
+    try {
+      // Compress each file
+      const compressedFiles = await Promise.all(
+        files.map((file) => imageCompression(file, options))
+      );
+
+      // Update the state with compressed files
+      setFormData({ ...formData, images: compressedFiles });
+    } catch (error) {
+      console.error('Error compressing images:', error);
+    }
   };
 
   const resetForm = () => {
