@@ -2,6 +2,16 @@ import { Button } from '../../components/ui/button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog.jsx';
+import ResidenceForm from '@/_components/residence_comp/ResidenceForm.jsx';
+import EditResidence from '@/_components/residence_comp/EditResidence.jsx';
 
 /**
  * A component to render a residence card with an image, details, and admin controls.
@@ -73,10 +83,23 @@ function RenderResidence({ residence, loading }) {
       {/* Admin Controls */}
       {userRole === 'admin' && (
         <div className="flex flex-row space-x-4">
-          <Button className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all">
-            <FontAwesomeIcon icon={faPen} className="mr-2" />
-            Edit
-          </Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all">
+                <FontAwesomeIcon icon={faPen} className="mr-2" />
+                Edit
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle></DialogTitle>
+                <DialogDescription>
+                  <EditResidence residence={residence} />
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+
           <Button className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all">
             <FontAwesomeIcon icon={faTrash} className="mr-2" />
             Delete
