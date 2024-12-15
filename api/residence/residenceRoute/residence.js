@@ -2,6 +2,8 @@ import express from "express"
 import AppError from "../../error.js"
 import Residence from "../residenceSchema.js"
 import cloudinary from "../../helpers/cloudinary.js"
+import upload from "../../helpers/multer.js"
+import fs from "fs"
 
 //inits
 const router = express.Router()
@@ -25,74 +27,81 @@ router.get("/all_residence", async (req, res, next) => {
   }
 })
 
-router.post("/add_residence", async (req, res, next) => {
-  const { name, location, description, images } = req.body
-  const uploadFolder = "Momentum/residences"
+router.post(
+  "/add_residence",
+  upload.array("images"),
+  async (req, res, next) => {
+    const { name, location, description } = req.body
+    const files = req.files
+    const uploadFolder = "Momentum/residences"
 
-  if (!name || !location) {
-    next(
-      new AppError("The name and address of a residence must be provided", 404)
-    )
-    return
-  }
+    console.log("Uploaded Files:", files)
 
-  try {
-    // Check for duplicates
-    const existingResidence = await Residence.findOne({ name })
-    if (existingResidence) {
-      next(
+    if (!name || !location) {
+      return next(
         new AppError(
-          `A residence with the name "${name}" already exists. Please choose a unique name.`,
-          409
+          "The name and address of a residence must be provided",
+          404
         )
       )
-      return
     }
 
-    // Upload images and collect their URLs and public_ids
-    const uploadedImages = []
-    if (images && images.length > 0) {
-      for (const img of images) {
+    if (!files || files.length === 0) {
+      return next(new AppError("No images were uploaded", 400))
+    }
+
+    try {
+      // Check for duplicates
+      const existingResidence = await Residence.findOne({ name })
+      if (existingResidence) {
+        return next(
+          new AppError(
+            `A residence with the name "${name}" already exists.`,
+            409
+          )
+        )
+      }
+
+      // Upload images to Cloudinary
+      const uploadedImages = []
+      for (const file of files) {
         try {
-          const result = await cloudinary.uploader.upload(img, {
+          console.log("Processing File:", file.path)
+          const result = await cloudinary.uploader.upload(file.path, {
             folder: uploadFolder,
           })
           uploadedImages.push({
             url: result.secure_url,
             public_id: result.public_id,
           })
+
+          // Remove temporary file
+          fs.unlinkSync(file.path)
         } catch (error) {
           console.error("Error while uploading image:", error)
-          next(new AppError("Error while uploading images", 500))
-          return
+          return next(new AppError("Error while uploading images", 500))
         }
       }
-    }
 
-    // Create a new residence document
-    const newResidence = new Residence({
-      name,
-      location,
-      description,
-      images: uploadedImages,
-    })
+      // Create a new residence document
+      const newResidence = new Residence({
+        name,
+        location,
+        description,
+        images: uploadedImages,
+      })
 
-    try {
       await newResidence.save()
-    } catch (e) {
-      console.error("Error while saving new residence:", e)
-      next(new AppError("Error while saving the new residence", 500))
-      return
-    }
 
-    res.status(200).json({
-      residence: newResidence,
-      message: "Residence added successfully",
-    })
-  } catch (error) {
-    console.error("Error while saving new residence:", error)
-    next(new AppError("There was a problem while adding residence", 500))
+      res.status(200).json({
+        residence: newResidence,
+        message: "RenderResidence added successfully",
+      })
+    } catch (error) {
+      console.error("Error while saving new residence:", error)
+      next(new AppError("There was a problem while adding residence", 500))
+    }
   }
-})
+)
 
 export default router

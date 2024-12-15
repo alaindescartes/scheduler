@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage" // Default is localStorage
 import errorReducer from "./error/errorSlice"
 import loadingReducer from "./loading/loadingSlice"
 import userReducer from "./user/userSlice"
+import residenceReducer from "./residence/residenceSlice"
 import { combineReducers } from "redux"
 
 // Configuration for redux-persist
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   loading: loadingReducer,
   error: errorReducer,
   user: userReducer,
+  residences: residenceReducer,
 })
 
 // Create a persisted reducer

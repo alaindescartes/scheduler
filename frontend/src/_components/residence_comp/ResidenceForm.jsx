@@ -1,86 +1,132 @@
-import React, { useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { setErrorState, resetErrorState } from "../../store/error/errorSlice"
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setErrorState, resetErrorState } from '@/store/error/errorSlice.js';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { getResidences } from '@/db/residence.js';
 
 function ResidenceForm() {
   const [formData, setFormData] = useState({
-    name: "",
-    location: "",
-    description: "",
+    name: '',
+    location: '',
+    description: '',
     images: [], // Holds uploaded image files
-  })
+  });
 
-  const [ImageError, setImageError] = useState(null)
+  const [ImageError, setImageError] = useState(null);
 
-  const dispatch = useDispatch()
-  const appError = useSelector((state) => state.error.error)
-  const message = useSelector((state) => state.error.errorMessage)
+  const dispatch = useDispatch();
+  const appError = useSelector((state) => state.error.error);
+  const message = useSelector((state) => state.error.errorMessage);
 
   const handleChange = (event) => {
-    const { name, value } = event.target
-    setFormData({ ...formData, [name]: value })
-    dispatch(resetErrorState())
-  }
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+    dispatch(resetErrorState());
+  };
 
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files) // Get selected files
-    setFormData({ ...formData, images: files })
-  }
+    const files = Array.from(event.target.files); // Get selected files
+    setFormData({ ...formData, images: files });
+  };
 
   const validateImage = (images) => {
-    const validTypes = ["image/jpeg", "image/png", "image/webp"]
-    const maxSize = 5 * 1024 * 1024 // 5 MB
-    const maxFiles = 5
-    const errors = []
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    const maxFiles = 5;
+    const errors = [];
 
     // Check total file count
     if (images.length > maxFiles) {
-      errors.push(`You can only upload up to ${maxFiles} files.`)
+      errors.push(`You can only upload up to ${maxFiles} files.`);
     }
 
     for (const file of images) {
       // Check file size
       if (file.size > maxSize) {
-        errors.push(`${file.name} is too large. Maximum file size is 5 MB.`)
+        errors.push(`${file.name} is too large. Maximum file size is 5 MB.`);
       }
 
       // Check file type
       if (!validTypes.includes(file.type)) {
         errors.push(
           `${file.name} is not a supported format. Supported formats are JPEG, PNG, and WebP.`
-        )
+        );
       }
     }
 
     if (errors.length > 0) {
-      const message = errors.join("\n")
-      console.log(message)
-      setImageError(message)
-      return false // Validation failed
+      const message = errors.join('\n');
+      console.log(message);
+      setImageError(message);
+      return false; // Validation failed
     }
 
     if (errors.length === 0) {
-      setImageError(null) // Clear previous errors
+      setImageError(null); // Clear previous errors
     }
 
-    return true // Validation passed
-  }
+    return true; // Validation passed
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!validateImage(formData.images)) console.log("image validation failed")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateImage(formData.images)) {
+      console.log('Image validation failed');
+      return;
+    }
+
     if (!formData.location || !formData.name) {
-      dispatch(setErrorState("Name and Location are required."))
-      return
+      dispatch(setErrorState('Name and Location are required.'));
+      return;
     }
-    console.log("Form Data:", formData)
-    console.log("Images:", formData.images)
-  }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('name', formData.name);
+    formDataToSend.append('location', formData.location);
+    formDataToSend.append('description', formData.description);
+
+    // Append each file to FormData
+    formData.images.forEach((file) => {
+      formDataToSend.append('images', file);
+    });
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/res/add_residence`,
+        formDataToSend,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        toast('Added RenderResidence Successfully', {
+          style: {
+            backgroundColor: 'green',
+            color: 'white',
+          },
+        });
+        getResidences(dispatch); // Refresh residences list
+      }
+    } catch (error) {
+      toast('Could not add residence, try again later', {
+        style: {
+          backgroundColor: 'red',
+          color: 'white',
+        },
+      });
+      console.error('Error submitting residence data: ', error);
+    }
+  };
 
   return (
     <form
       className="max-w-lg mx-auto p-6 bg-white border border-gray-300 rounded-lg shadow-md space-y-4"
       onSubmit={handleSubmit}
+      enctype="multipart/form-data"
     >
       <h2 className="text-2xl font-bold text-gray-800">Add Residence</h2>
 
@@ -88,7 +134,7 @@ function ResidenceForm() {
 
       {ImageError && (
         <div className="text-xs text-red-500">
-          {ImageError.split("\n").map((message, index) => (
+          {ImageError.split('\n').map((message, index) => (
             <p key={index}>{message}</p>
           ))}
         </div>
@@ -183,7 +229,7 @@ function ResidenceForm() {
         Submit
       </button>
     </form>
-  )
+  );
 }
 
-export default ResidenceForm
+export default ResidenceForm;

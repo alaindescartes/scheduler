@@ -1,6 +1,6 @@
-import React from "react"
-import { Button } from "../../components/ui/button.jsx"
-import Residence from "../Residence.jsx"
+import { useEffect } from 'react';
+import { Button } from '../../components/ui/button.jsx';
+import RenderResidence from '../residence_comp/RenderResidence.jsx';
 import {
   Dialog,
   DialogContent,
@@ -8,19 +8,58 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import ResidenceForm from "../residence_comp/ResidenceForm.jsx"
+} from '@/components/ui/dialog';
+import ResidenceForm from '../residence_comp/ResidenceForm.jsx';
+import { getResidences } from '@/db/residence.js';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  resetLoadingState,
+  setLoadingState,
+} from '@/store/loading/loadingSlice.js';
 
-import { useSelector } from "react-redux"
-import axios from "axios"
-
+/**
+ * Renders a list of residences and provides administrative functionality for managing them.
+ *
+ * - Admin users can add new residences using the "Add Residences" dialog.
+ * - Residences are fetched from the database and displayed in a list.
+ * - Non-admin users see a read-only view of the residences.
+ *
+ * @component
+ * @returns {React.ReactElement} The rendered `Residences` component.
+ *
+ * @example
+ * <Residences />
+ */
 function Residences() {
-  //   const userRole =
-  //      useSelector((state) => state?.user?.user?.details?.role) || "caregiver"
-  const userRole = "admin"
+  const userRole =
+    useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
+  const loading = useSelector((state) => state?.loading.isLoading);
+
+  const dispatch = useDispatch();
+
+  const residences =
+    useSelector((state) => state?.residences?.residences) || [];
+
+  useEffect(() => {
+    async function putResidenceInStore() {
+      try {
+        dispatch(setLoadingState(true));
+        await getResidences(dispatch);
+      } catch (error) {
+        console.error('Error fetching residences:', error);
+      } finally {
+        dispatch(resetLoadingState());
+      }
+    }
+
+    if (residences.length === 0) {
+      putResidenceInStore();
+    }
+  }, [dispatch, residences.length]);
+
   return (
     <div className="flex flex-col gap-2 ">
-      {userRole === "admin" && (
+      {userRole === 'admin' && (
         <Dialog>
           <DialogTrigger>
             <Button className="bg-blue-400 w-[300px] text-center m-auto mt-3 hover:bg-blue-500">
@@ -39,10 +78,22 @@ function Residences() {
       )}
       {/* list of residences */}
       <div>
-        <Residence />
+        <div>
+          {Array.isArray(residences) && residences.length > 0 ? (
+            residences.map((res) => (
+              <RenderResidence
+                key={res._id}
+                residence={res}
+                loading={loading}
+              />
+            ))
+          ) : (
+            <p>No residences available.</p>
+          )}
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Residences
+export default Residences;
