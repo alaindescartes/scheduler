@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog.jsx';
 import EditResidence from '@/_components/residence_comp/EditResidence.jsx';
+import { Link } from 'react-router-dom';
 
 /**
  * A component to render a residence card with an image, details, and admin controls.
@@ -32,6 +33,7 @@ import EditResidence from '@/_components/residence_comp/EditResidence.jsx';
  *
  * <RenderResidence residence={residence} loading={false} />;
  */
+// eslint-disable-next-line react/prop-types
 function RenderResidence({ residence, loading, deleteFunc }) {
   const imageAddrress =
     'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG91c2V8ZW58MHx8MHx8fDA%3D';
@@ -55,62 +57,64 @@ function RenderResidence({ residence, loading, deleteFunc }) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-start bg-white border border-gray-200 rounded-lg shadow-lg p-6 gap-6 m-3">
-      {/* RenderResidence Image */}
-      <div className="w-full md:w-[450px]">
-        <img
-          src={residence?.images?.[0]?.url || imageAddrress}
-          alt="photo of residence"
-          loading="lazy"
-          className="border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow w-full h-48 object-cover"
-        />
-      </div>
-
-      {/* RenderResidence Info */}
-      <div className="flex-1 text-left space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800">
-          {residence?.name || 'Grouphome 20'}
-        </h2>
-        <p className="text-gray-600">
-          {residence?.location || '1234 Elm Street, Edmonton, AB, Canada'}
-        </p>
-        <p className="text-gray-500 text-sm">
-          {residence.description ||
-            'This residence provides supportive living for individuals requiring additional care and resources.'}
-        </p>
-      </div>
-
-      {/* Admin Controls */}
-      {userRole === 'admin' && (
-        <div className="flex flex-row space-x-4">
-          <Dialog>
-            <DialogTrigger>
-              <Button className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all">
-                <FontAwesomeIcon icon={faPen} className="mr-2" />
-                Edit
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle></DialogTitle>
-                <DialogDescription>
-                  <EditResidence residence={residence} />
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-
-          <Button
-            onClick={deleteFunc}
-            disabled={isLoading}
-            className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
-          >
-            <FontAwesomeIcon icon={faTrash} className="mr-2" />
-            {isLoading ? 'DELETING...' : 'DELETE'}
-          </Button>
+    <Link to={`/homepage/visit_residence/${residence._id}`}>
+      <div className="flex flex-col md:flex-row items-center md:items-start bg-white border border-gray-200 rounded-lg shadow-lg p-6 gap-6 m-3 hover:shadow-xl hover:border-blue-500 transition-all hover:cursor-pointer">
+        {/* RenderResidence Image */}
+        <div className="w-full md:w-[450px]">
+          <img
+            src={residence?.images?.[0]?.url || imageAddrress}
+            alt="photo of residence"
+            loading="lazy"
+            className="border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition-shadow w-full h-48 object-cover"
+          />
         </div>
-      )}
-    </div>
+
+        {/* RenderResidence Info */}
+        <div className="flex-1 text-left space-y-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {residence?.name || 'Grouphome 20'}
+          </h2>
+          <p className="text-gray-600">
+            {residence?.location || '1234 Elm Street, Edmonton, AB, Canada'}
+          </p>
+          <p className="text-gray-500 text-sm">
+            {residence.description ||
+              'This residence provides supportive living for individuals requiring additional care and resources.'}
+          </p>
+        </div>
+
+        {/* Admin Controls */}
+        {userRole === 'admin' && (
+          <div className="flex flex-row space-x-4">
+            <Dialog>
+              <DialogTrigger>
+                <Button className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all">
+                  <FontAwesomeIcon icon={faPen} className="mr-2" />
+                  Edit
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle></DialogTitle>
+                  <DialogDescription>
+                    <EditResidence residence={residence} />
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              onClick={deleteFunc}
+              disabled={isLoading}
+              className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
+            >
+              <FontAwesomeIcon icon={faTrash} className="mr-2" />
+              {isLoading ? 'DELETING...' : 'DELETE'}
+            </Button>
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }
 
