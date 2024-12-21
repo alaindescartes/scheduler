@@ -65,4 +65,5 @@ app.use((err, req, res, _next) => {
     status: err.status,
     message: err.message,
   });
+  console.log('Global error', err);
 });

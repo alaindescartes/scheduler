@@ -2,8 +2,8 @@ import express from 'express';
 import AppError from '../../error.js';
 import Residence from '../residenceSchema.js';
 import cloudinary from '../../helpers/cloudinary.js';
-import upload from '../../helpers/multer.js';
-import { promises as fs } from 'fs';
+import { upload } from '../../helpers/multer.js';
+import fs from 'fs';
 
 //inits
 const router = express.Router();
@@ -29,11 +29,12 @@ router.get('/all_residence', async (req, res, next) => {
 
 router.post(
   '/add_residence',
-  upload.array('images'), // Multer middleware to handle image uploads
+  upload.array('images'), // Multer middleware
   async (req, res, next) => {
     const { name, location, description } = req.body;
-    const files = req.files;
-    const uploadFolder = 'Momentum/residences';
+    const files = req.files || [];
+    const uploadFolder = 'Momentum/residences'; // Cloudinary folder
+    const ephemeralFolder = req.uploadPath; // the unique local folder from multer
 
     // Validate required fields
     if (!name || !location) {
@@ -45,12 +46,12 @@ router.post(
       );
     }
 
-    if (!files || files.length === 0) {
+    if (!files.length) {
       return next(new AppError('No images were uploaded', 400));
     }
 
     try {
-      // Check for duplicate residence by name (Ensure "name" is indexed in the schema)
+      // Check for duplicate by name
       const existingResidence = await Residence.findOne({ name });
       if (existingResidence) {
         return next(
@@ -61,21 +62,18 @@ router.post(
         );
       }
 
-      // Upload images to Cloudinary in parallel
-      console.time('Image Uploads');
+      // Upload images to Cloudinary (in parallel)
       const uploadedImages = await Promise.all(
         files.map(async (file) => {
           const result = await cloudinary.uploader.upload(file.path, {
             folder: uploadFolder,
           });
-          await fs.unlink(file.path); // Asynchronously delete the temporary file
           return {
             url: result.secure_url,
             public_id: result.public_id,
           };
         })
       );
-      console.timeEnd('Image Uploads'); // Log how long uploads take
 
       // Create and save a new residence document
       console.time('MongoDB Save');
@@ -86,7 +84,7 @@ router.post(
         images: uploadedImages,
       });
       await newResidence.save();
-      console.timeEnd('MongoDB Save'); // Log how long the database save takes
+      console.timeEnd('MongoDB Save');
 
       // Respond to the client
       res.status(200).json({
@@ -96,10 +94,18 @@ router.post(
     } catch (error) {
       console.error('Error while adding residence:', error);
       next(new AppError('There was a problem while adding the residence', 500));
+    } finally {
+      // Cleanup: remove the entire ephemeral folder
+      if (ephemeralFolder) {
+        try {
+          fs.rmSync(ephemeralFolder, { recursive: true, force: true });
+        } catch (err) {
+          console.error('Error deleting folder:', ephemeralFolder, err);
+        }
+      }
     }
   }
 );
-
 router.patch(
   '/edit_residence/:id',
   upload.array('images'), // Multer middleware for handling file uploads

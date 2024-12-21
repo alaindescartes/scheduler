@@ -39,6 +39,8 @@ function ResidenceForm() {
   const loading = useSelector((state) => state.loading.isLoading);
 
   const handleChange = (event) => {
+    console.log('Selected files:', event.target.files); //files are null when printed
+
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
     dispatch(resetErrorState());
@@ -143,13 +145,20 @@ function ResidenceForm() {
       formDataToSend.append('images', file);
     });
 
+    console.log('formData:');
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value);
+    }
+
     try {
+      console.log('Submitting FormData:', [...formDataToSend.entries()]);
+      console.log('Making API request...');
       dispatch(setLoadingState(true));
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/res/add_residence`,
         formDataToSend,
         {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          //headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         }
       );
