@@ -14,46 +14,54 @@ import clientRouter from './client/clientRoutes/clientRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configure dotenv
+// Load environment variables from .env
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 
-//Middleware
+// Middleware: Session
 app.use(
   session({
-    secret: process.env.SECRET_KEY,
+    secret: process.env.SECRET_KEY || 'defaultSecret', // Fallback secret key for development
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Use true if using HTTPS
-      httpOnly: true, // Helps mitigate XSS attacks
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60, // 1 hour in milliseconds
+      secure: process.env.NODE_ENV === 'production', // Secure cookies in production (HTTPS)
+      httpOnly: true, // Prevent client-side access
+      sameSite: 'lax', // Protect against CSRF
+      maxAge: 1000 * 60 * 60, // 1 hour
     },
   })
 );
+
+// Middleware: CORS
 app.use(
   cors({
-    origin: ' http://localhost:5173',
-    credentials: true,
+    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', // Use env variable or default
+    credentials: true, // Allow cookies and headers
   })
 );
+
+// Middleware: Parse JSON
 app.use(express.json());
-//app.use(cookieParser)
 
-//routes
-app.use('/auth', userAuthRouter);
-app.use('/res', isAuthenticated, residenceRouter);
-app.use('/client', isAuthenticated, clientRouter);
+// Routes
+app.use('/auth', userAuthRouter); // Authentication routes
+app.use('/res', isAuthenticated, residenceRouter); // Protected residence routes
+app.use('/client', isAuthenticated, clientRouter); // Protected client routes
 
-//connect to the db()
+// Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 30000, // 30 seconds timeout
+  })
   .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.log('Mongo_error: ', err));
+  .catch((err) => console.error('MongoDB Connection Error:', err));
 
-// Start the server
+// Enable Mongoose Debugging (Optional, useful for development)
+mongoose.set('debug', process.env.NODE_ENV !== 'production');
+
+// Start the Server
 const PORT = process.env.PORT || 8181;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
@@ -67,5 +75,5 @@ app.use((err, req, res, _next) => {
     status: err.status,
     message: err.message,
   });
-  console.log('Global error', err);
+  console.error('Global error:', err);
 });
