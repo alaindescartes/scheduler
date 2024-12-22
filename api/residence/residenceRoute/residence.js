@@ -27,6 +27,26 @@ router.get('/all_residence', async (req, res, next) => {
   }
 });
 
+router.get('/:id', async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const residence = await Residence.findById(id);
+    if (!residence) {
+      return next(new AppError('The residence does not exist', 404));
+    }
+    console.log('residence', residence);
+    res.status(200).json({
+      message: 'Success',
+      residence: residence,
+    });
+  } catch (error) {
+    console.log('Error getting the residence', error);
+    return next(
+      new AppError('An error occurred while fetching residences', 500)
+    );
+  }
+});
+
 router.post(
   '/add_residence',
   upload.array('images'), // Multer middleware
@@ -106,6 +126,7 @@ router.post(
     }
   }
 );
+
 router.patch(
   '/edit_residence/:id',
   upload.array('images'), // Multer middleware for handling file uploads

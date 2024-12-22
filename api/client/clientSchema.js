@@ -3,7 +3,11 @@ import mongoose from 'mongoose';
 
 const clientSchema = new Schema(
   {
-    name: {
+    firstname: {
+      type: String,
+      required: true,
+    },
+    lastname: {
       type: String,
       required: true,
     },
@@ -18,8 +22,21 @@ const clientSchema = new Schema(
     carePlan: {
       type: String,
     },
+    status: {
+      type: String,
+      enum: ['onsite', 'offsite'],
+      default: 'onsite',
+    },
+    images: [
+      {
+        url: { type: String, required: true },
+        public_id: { type: String, required: true },
+      },
+    ],
   },
+
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Client', clientSchema);
+const Client = mongoose.model('Client', clientSchema);
+export default Client;

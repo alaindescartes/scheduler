@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import userAuthRouter from './user/userRoutes/userAuth.js';
 import residenceRouter from './residence/residenceRoute/residence.js';
 import { isAuthenticated } from './auth/authHelper.js';
+import clientRouter from './client/clientRoutes/clientRoutes.js';
 
 // Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +45,7 @@ app.use(express.json());
 //routes
 app.use('/auth', userAuthRouter);
 app.use('/res', isAuthenticated, residenceRouter);
+app.use('/client', isAuthenticated, clientRouter);
 
 //connect to the db()
 mongoose
