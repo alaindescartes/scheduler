@@ -28,6 +28,29 @@ router.get('/all-clients', async (req, res, next) => {
   }
 });
 
+router.get('/:id/clients', async (req, res, next) => {
+  const { id } = req.params;
+
+  //verify the residence id
+  const residence = await Residence.findById(id);
+  if (!residence) {
+    return next(new AppError('residence not found', 404));
+  }
+
+  try {
+    const clients = await Client.find({ residenceId: id })
+      .populate('residenceId')
+      .exec();
+
+    res
+      .status(200)
+      .json({ message: 'Clients fetched successfully', clients: clients });
+  } catch (error) {
+    console.log('Error while fetching residents ', error);
+    return next(new AppError('Error while fetching residents', 500));
+  }
+});
+
 router.post(
   '/:id/add_client',
   upload.array('images'), // Multer middleware
@@ -54,9 +77,20 @@ router.post(
       return next(new AppError('No images were uploaded', 400));
     }
 
-    const residence = Residence.findById(id);
+    //verify the id passed
+    const residence = await Residence.findById(id);
     if (!residence) {
       return next(new AppError('residence not found', 404));
+    }
+
+    //verify if client exists
+    const clientExists = await Client.findOne({
+      lastname: lastName,
+      firstname: firstName,
+    });
+
+    if (clientExists) {
+      return next(new AppError('Client already exists', 404));
     }
 
     try {
