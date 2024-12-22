@@ -5,7 +5,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // eslint-disable-next-line react/prop-types
-function Client({ loading, client }) {
+function Client({ loading, client, residenceId }) {
   const onsite = client.status;
   const userRole =
     useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
@@ -37,7 +37,7 @@ function Client({ loading, client }) {
   }
 
   return (
-    <Link to={'#'}>
+    <Link to={`/homepage/visit_residence/${residenceId}/${client._id}`}>
       <div className="flex flex-col md:flex-row items-center bg-white border border-gray-200 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow space-y-4 md:space-y-0 md:space-x-4 mb-4">
         {/* Image of a resident */}
         <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center overflow-hidden rounded-full border border-gray-300 shadow-sm bg-gray-100">

@@ -56,6 +56,7 @@ const router = createBrowserRouter([
           </ProtectedRoutes>
         ),
         path: 'visit_residence/:id',
+        children: [{ element: <div>Child route</div>, path: ':clientId' }],
       },
     ],
   },
