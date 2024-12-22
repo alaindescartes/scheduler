@@ -5,11 +5,12 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // eslint-disable-next-line react/prop-types
-function Client({ loading }) {
-  const onsite = 'onsite';
+function Client({ loading, client }) {
+  const onsite = client.status;
   const userRole =
     useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
-  const imageUrl = null;
+  const imageUrl = client.images?.[0]?.url;
+  const name = `${client.firstname} ${client.lastname}`;
 
   // Handle loading state
   if (loading) {
@@ -53,7 +54,7 @@ function Client({ loading }) {
 
         {/* Details of resident */}
         <div className="flex flex-col items-start space-y-2 flex-1">
-          <p className="text-xl font-semibold text-gray-800">John Doe</p>
+          <p className="text-xl font-semibold text-gray-800">{name}</p>
           {onsite === 'onsite' && (
             <p className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
               Status: {onsite}

@@ -12,14 +12,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ClientForm from '../clientComponents/ClientForm';
+import {
+  resetLoadingState,
+  setLoadingState,
+} from '../../store/loading/loadingSlice';
 
 function ResidentOverview() {
   const { id } = useParams();
   const [residence, setResidence] = useState({});
+  const [clients, setClients] = useState([]);
   const userRole =
     useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
+  const loading = useSelector((state) => state.loading.isLoading);
+  const dispatch = useDispatch();
 
   //get residence info
   const getResidence = async () => {
@@ -29,8 +36,27 @@ function ResidentOverview() {
       setResidence(response.data?.residence);
     }
   };
+
+  //get clients associated with the residence
+  const getClients = async () => {
+    try {
+      dispatch(setLoadingState(true));
+      const url = `${import.meta.env.VITE_BASE_URL}/client/${id}/clients`;
+      const response = await axios.get(url, { withCredentials: true });
+      if (response.status === 200) {
+        setClients(response.data.clients);
+        console.log('clients: ', response.data.clients);
+      }
+    } catch (error) {
+      console.log('error getting clients', error);
+    } finally {
+      dispatch(resetLoadingState());
+    }
+  };
+
   useEffect(() => {
     getResidence();
+    getClients();
   }, [id]);
 
   return (
@@ -68,13 +94,26 @@ function ResidentOverview() {
       </div>
 
       {/* Client list */}
-      <div
-        className="grid grid-cols-1 gap-6 overflow-y-scroll border border-gray-200 rounded-lg shadow-md p-4"
-        style={{ maxHeight: '400px', scrollbarGutter: 'stable' }}
-      >
-        <Client />
-        <Client />
-      </div>
+      {clients.length != 0 ? (
+        <div
+          className="grid grid-cols-1 gap-6 overflow-y-scroll border border-gray-200 rounded-lg shadow-md p-4"
+          style={{ maxHeight: '400px', scrollbarGutter: 'stable' }}
+        >
+          {clients.map((client) => (
+            <Client loading={loading} client={client} key={client._id} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex items-center justify-center flex-col text-center bg-gray-100 border border-gray-300 rounded-lg shadow-md p-6">
+          <p className="text-lg font-semibold text-gray-700">
+            No clients available
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            This residence currently has no registered clients. Please check
+            back later.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
