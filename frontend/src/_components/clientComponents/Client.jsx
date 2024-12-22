@@ -11,10 +11,10 @@ function Client({ loading }) {
     useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
   const imageUrl = null;
 
-  // handle loading state
+  // Handle loading state
   if (loading) {
     return (
-      <div className="flex flex-col md:flex-row items-center bg-gray-100 border border-gray-200 rounded-lg shadow-lg p-4 animate-pulse space-y-4 md:space-y-0 md:space-x-4">
+      <div className="flex flex-col md:flex-row items-center bg-gray-100 border border-gray-200 rounded-lg shadow-lg p-4 animate-pulse space-y-4 md:space-y-0 md:space-x-4 mb-4">
         {/* Image skeleton */}
         <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-300"></div>
 
@@ -37,7 +37,7 @@ function Client({ loading }) {
 
   return (
     <Link to={'#'}>
-      <div className="flex flex-col md:flex-row items-center bg-white border border-gray-200 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow space-y-4 md:space-y-0 md:space-x-4">
+      <div className="flex flex-col md:flex-row items-center bg-white border border-gray-200 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow space-y-4 md:space-y-0 md:space-x-4 mb-4">
         {/* Image of a resident */}
         <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center overflow-hidden rounded-full border border-gray-300 shadow-sm bg-gray-100">
           {imageUrl ? (
