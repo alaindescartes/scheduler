@@ -93,7 +93,7 @@ const clientSchema = new Schema(
     albertaHealthNbr: {
       type: String,
       required: false,
-      match: /^\d{9}$/,
+      // match: /^\d{9}$/,
       default: 'Not provided',
     },
     riskAssessment: {

@@ -59,7 +59,7 @@ mongoose
   .catch((err) => console.error('MongoDB Connection Error:', err));
 
 // Enable Mongoose Debugging (Optional, useful for development)
-mongoose.set('debug', process.env.NODE_ENV !== 'production');
+//mongoose.set('debug', process.env.NODE_ENV !== 'production');
 
 // Start the Server
 const PORT = process.env.PORT || 8181;

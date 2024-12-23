@@ -173,7 +173,11 @@ router.put('/:clientId/edit', async (req, res, next) => {
     // Update only the provided fields
     Object.keys(updates).forEach((key) => {
       if (updates[key] !== undefined) {
-        client[key] = updates[key];
+        if (typeof updates[key] === 'object' && !Array.isArray(updates[key])) {
+          client[key] = { ...client[key]._doc, ...updates[key] }; // Merge nested objects
+        } else {
+          client[key] = updates[key];
+        }
       }
     });
 
