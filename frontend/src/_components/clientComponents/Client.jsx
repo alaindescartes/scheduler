@@ -27,7 +27,7 @@ function Client({ loading, client, residenceId }) {
 
         {/* Button skeletons */}
         {userRole === 'admin' && (
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-wrap space-x-2 space-y-2">
             <div className="w-20 h-8 bg-gray-300 rounded-md"></div>
             <div className="w-20 h-8 bg-gray-300 rounded-md"></div>
           </div>
@@ -37,49 +37,58 @@ function Client({ loading, client, residenceId }) {
   }
 
   return (
-    <Link to={`/homepage/visit_residence/${residenceId}/${client._id}`}>
-      <div className="flex flex-col md:flex-row items-center bg-white border border-gray-200 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow space-y-4 md:space-y-0 md:space-x-4 mb-4">
-        {/* Image of a resident */}
-        <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center overflow-hidden rounded-full border border-gray-300 shadow-sm bg-gray-100">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt="picture of a resident"
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <FontAwesomeIcon icon={faUser} className="text-gray-400 text-5xl" />
-          )}
-        </div>
-
-        {/* Details of resident */}
-        <div className="flex flex-col items-start space-y-2 flex-1">
-          <p className="text-xl font-semibold text-gray-800">{name}</p>
-          {onsite === 'onsite' && (
-            <p className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
-              Status: {onsite}
-            </p>
-          )}
-          {onsite === 'offsite' && (
-            <p className="text-sm font-medium text-red-600 bg-red-100 px-3 py-1 rounded-full">
-              Status: {onsite}
-            </p>
-          )}
-        </div>
-
-        {/* Admin functions */}
-        {userRole === 'admin' && (
-          <div className="flex flex-row space-x-2">
-            <Button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all">
-              EDIT INFO
-            </Button>
-            <Button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-all">
-              DELETE CLIENT
-            </Button>
-          </div>
+    <div className="flex flex-col md:flex-row items-center bg-white border border-gray-200 rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow space-y-4 md:space-y-0 md:space-x-4 mb-4">
+      {/* Image of a resident */}
+      <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center overflow-hidden rounded-full border border-gray-300 shadow-sm bg-gray-100">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt="picture of a resident"
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <FontAwesomeIcon icon={faUser} className="text-gray-400 text-5xl" />
         )}
       </div>
-    </Link>
+
+      {/* Details of resident */}
+      <div className="flex flex-col items-start space-y-2 flex-1">
+        <p className="text-xl font-semibold text-gray-800">{name}</p>
+        {onsite === 'onsite' && (
+          <p className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full">
+            Status: {onsite}
+          </p>
+        )}
+        {onsite === 'offsite' && (
+          <p className="text-sm font-medium text-red-600 bg-red-100 px-3 py-1 rounded-full">
+            Status: {onsite}
+          </p>
+        )}
+      </div>
+
+      {/* Buttons */}
+      <div className="flex flex-wrap md:space-x-2 space-y-2 md:space-y-0">
+        {/* View button: Visible to everyone */}
+        <Link
+          to={`/homepage/visit_residence/${residenceId}/${client._id}`}
+          className="bg-green-500 text-white px-4 py-1 w-full md:w-auto rounded-md hover:bg-green-600 transition-all flex items-center justify-center"
+        >
+          VIEW
+        </Link>
+
+        {/* Admin-only buttons */}
+        {userRole === 'admin' && (
+          <>
+            <Button className="bg-blue-500 text-white px-4 py-2 w-full md:w-auto rounded-md hover:bg-blue-600 transition-all">
+              EDIT INFO
+            </Button>
+            <Button className="bg-red-500 text-white px-4 py-2 w-full md:w-auto rounded-md hover:bg-red-600 transition-all">
+              DELETE CLIENT
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 

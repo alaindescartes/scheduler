@@ -10,6 +10,7 @@ import Register from './_components/pages/Register.jsx';
 import ProtectedRoutes from './_components/outlets/ProtectedRoutes.jsx';
 import Residences from './_components/pages/Residences.jsx';
 import ResidentOverview from '@/_components/pages/ResidenceOverview.jsx';
+import ClientProfile from './_components/clientComponents/ClientProfile.jsx';
 
 const router = createBrowserRouter([
   {
@@ -56,7 +57,7 @@ const router = createBrowserRouter([
           </ProtectedRoutes>
         ),
         path: 'visit_residence/:id',
-        children: [{ element: <div>Child route</div>, path: ':clientId' }],
+        children: [{ element: <ClientProfile />, path: ':clientId' }],
       },
     ],
   },
