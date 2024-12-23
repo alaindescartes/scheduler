@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { getClient } from '../../db/client';
 import { formatDate } from '../../helpers/format';
+import axios from 'axios';
+import { toast } from 'sonner';
+import {
+  resetLoadingState,
+  setLoadingState,
+} from '../../store/loading/loadingSlice';
 
 function ClientProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const [currentClient, setCurrentClient] = useState(null);
   const [tempAllergies, setTempAllergies] = useState([]);
+  const dispatch = useDispatch();
 
   const userRole =
     useSelector((state) => state?.user?.user?.details?.role) || 'caregiver';
+  const loading = useSelector((state) => state?.loading?.isloading);
   const { clientId } = useParams();
   const [profile, setProfile] = useState({
     name: '',
@@ -30,7 +38,7 @@ function ClientProfile() {
     preferredLanguage: '',
     allergies: [],
     dietaryRestrictions: [],
-    primaryPhysician: '',
+    primaryPhysician: {},
     albertaHealthNbr: '',
     riskAssessment: '',
   });
@@ -74,7 +82,10 @@ function ClientProfile() {
         preferredLanguage: currentClient.preferredLanguage,
         allergies: currentClient.allergies,
         dietaryRestrictions: currentClient.dietaryRestrictions,
-        primaryPhysician: `${currentClient.primaryPhysician?.name} - ${currentClient.primaryPhysician?.phone}`,
+        primaryPhysician: {
+          name: currentClient.primaryPhysician?.name,
+          phone: currentClient.primaryPhysician?.phone,
+        },
         albertaHealthNbr: currentClient.albertaHealthNbr,
         riskAssessment: currentClient.riskAssessment,
       }));
@@ -150,7 +161,7 @@ function ClientProfile() {
     setTempDietaryRestrictions(profile.dietaryRestrictions);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (validateAllFields()) {
       // Update profile with tempAllergies and tempDietaryRestrictions
       const updatedProfile = {
@@ -161,8 +172,33 @@ function ClientProfile() {
       setProfile(updatedProfile);
       setIsEditing(false);
 
-      // Simulate saving or send updatedProfile to backend
-      console.log('Profile saved:', updatedProfile);
+      // send updatedProfile to backend
+      try {
+        dispatch(setLoadingState(true));
+        const url = `${import.meta.env.VITE_BASE_URL}/client/${currentClient._id}/edit`;
+        const response = await axios.put(url, updatedProfile, {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setCurrentClient(response.data.client);
+          toast('client updated successfully', {
+            style: {
+              color: 'white',
+              background: 'green',
+            },
+          });
+        }
+      } catch (error) {
+        console.log('error while updating client ', error);
+        toast('Could not update client, try agin later', {
+          style: {
+            color: 'white',
+            background: 'red',
+          },
+        });
+      } finally {
+        dispatch(resetLoadingState());
+      }
     } else {
       console.error('Validation failed:', errors);
     }
@@ -170,6 +206,21 @@ function ClientProfile() {
 
   const handleAddDietaryRestriction = () => {
     setTempDietaryRestrictions((prev) => [...prev, '']);
+  };
+
+  const handleNameInput = (e) => {
+    const fullName = e.target.value.trim();
+    const nameParts = fullName.split(' ');
+
+    const firstname = nameParts[0] || '';
+    const lastname = nameParts.slice(1).join(' ') || ''; // Join remaining as lastname
+
+    setProfile((prev) => ({
+      ...prev,
+      name: fullName, // Preserve full name
+      firstname,
+      lastname,
+    }));
   };
 
   const handleDietaryChange = (index, value) => {
@@ -206,9 +257,10 @@ function ClientProfile() {
             {isEditing && (
               <button
                 onClick={handleSave}
+                disabled={loading}
                 className="px-4 py-2 rounded-lg text-white bg-green-500 hover:bg-green-600 transition"
               >
-                Save
+                {loading ? 'Saving..' : 'Save'}
               </button>
             )}
           </div>
@@ -235,7 +287,7 @@ function ClientProfile() {
                 type="text"
                 name="name"
                 value={profile.name}
-                onChange={handleInputChange}
+                onChange={handleNameInput}
                 className={`text-xl md:text-3xl font-bold text-gray-800 w-full border ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 } rounded px-3 py-2`}
@@ -365,17 +417,21 @@ function ClientProfile() {
           <li>
             <strong>Marital Status:</strong>{' '}
             {isEditing ? (
-              <input
-                type="text"
+              <select
                 name="maritalStatus"
                 value={profile.maritalStatus}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded px-2 py-1"
-              />
+              >
+                <option value="Not provided">Not provided</option>
+                <option value="married">Married</option>
+                <option value="single">Single</option>
+              </select>
             ) : (
               profile.maritalStatus
             )}
           </li>
+
           <li>
             <strong>Preferred Language:</strong>{' '}
             {isEditing ? (
@@ -549,17 +605,66 @@ function ClientProfile() {
           <li>
             <strong>Primary Physician:</strong>{' '}
             {isEditing ? (
-              <input
-                type="text"
-                name="primaryPhysician"
-                value={profile.primaryPhysician}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded px-2 py-1"
-              />
+              <div className="space-y-2">
+                <div>
+                  <label
+                    htmlFor="primaryPhysicianName"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Name
+                  </label>
+                  <input
+                    id="primaryPhysicianName"
+                    type="text"
+                    name="primaryPhysicianName"
+                    value={profile.primaryPhysician?.name || ''}
+                    onChange={(e) => {
+                      const updatedPhysician = {
+                        ...profile.primaryPhysician,
+                        name: e.target.value,
+                      };
+                      setProfile((prev) => ({
+                        ...prev,
+                        primaryPhysician: updatedPhysician,
+                      }));
+                    }}
+                    className="w-full border border-gray-300 rounded px-2 py-1"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="primaryPhysicianPhone"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Phone
+                  </label>
+                  <input
+                    id="primaryPhysicianPhone"
+                    type="text"
+                    name="primaryPhysicianPhone"
+                    value={profile.primaryPhysician?.phone || ''}
+                    onChange={(e) => {
+                      const updatedPhysician = {
+                        ...profile.primaryPhysician,
+                        phone: e.target.value,
+                      };
+                      setProfile((prev) => ({
+                        ...prev,
+                        primaryPhysician: updatedPhysician,
+                      }));
+                    }}
+                    className="w-full border border-gray-300 rounded px-2 py-1"
+                  />
+                </div>
+              </div>
             ) : (
-              profile.primaryPhysician
+              <p>
+                {profile.primaryPhysician?.name || 'No name provided'} -{' '}
+                {profile.primaryPhysician?.phone || 'No phone number provided'}
+              </p>
             )}
           </li>
+
           <li>
             <strong>Alberta Health Number:</strong>{' '}
             {isEditing ? (
