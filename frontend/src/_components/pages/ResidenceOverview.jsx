@@ -46,7 +46,6 @@ function ResidentOverview() {
       const response = await axios.get(url, { withCredentials: true });
       if (response.status === 200) {
         setClients(response.data.clients);
-        console.log('clients: ', response.data.clients);
       }
     } catch (error) {
       console.log('error getting clients', error);
@@ -58,7 +57,7 @@ function ResidentOverview() {
   useEffect(() => {
     getResidence();
     getClients();
-  }, [id])
+  }, [id]);
 
   return (
     <>
