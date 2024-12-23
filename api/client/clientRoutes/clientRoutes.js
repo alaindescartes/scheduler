@@ -138,4 +138,56 @@ router.post(
   }
 );
 
+router.get('/:clientId', async (req, res, next) => {
+  const { clientId } = req.params;
+  try {
+    const clientExist = await Client.findById(clientId);
+
+    if (!clientExist) {
+      return next(new AppError('client does not exist.', 404));
+    }
+
+    res
+      .status(200)
+      .json({ message: 'client fetched successfully', client: clientExist });
+  } catch (err) {
+    console.log('unable to get clients: ', err);
+    next(new AppError('unable to fetch clients', 500));
+  }
+});
+
+router.put('/:clientId/edit', async (req, res, next) => {
+  const { clientId } = req.params;
+
+  // Extract only the provided fields from the request body
+  const updates = req.body;
+
+  try {
+    // Find the client by ID
+    const client = await Client.findById(clientId);
+
+    if (!client) {
+      return next(new AppError('Cannot find client', 404));
+    }
+
+    // Update only the provided fields
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] !== undefined) {
+        client[key] = updates[key];
+      }
+    });
+
+    // Save the updated client document
+    await client.save();
+
+    res.status(200).json({
+      message: 'Client updated successfully',
+      client,
+    });
+  } catch (error) {
+    console.error('Error while editing client:', error);
+    next(new AppError('Error while editing client', 500));
+  }
+});
+
 export default router;
