@@ -58,7 +58,7 @@ function ResidentOverview() {
   useEffect(() => {
     getResidence();
     getClients();
-  }, [id]);
+  }, [id])
 
   return (
     <>
