@@ -18,6 +18,7 @@ import {
   resetLoadingState,
   setLoadingState,
 } from '../../store/loading/loadingSlice';
+import ResidenceLinks from '../residence_comp/ResidenceLinks';
 
 function ResidentOverview() {
   const { id } = useParams();
@@ -70,7 +71,7 @@ function ResidentOverview() {
 
           {/* Admin Functionalities */}
           <div className="flex justify-center space-x-4 mb-6">
-            {/* add client */}
+            {/* Add Client */}
             {userRole === 'admin' && (
               <Dialog>
                 <DialogTrigger>
@@ -80,7 +81,11 @@ function ResidentOverview() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle></DialogTitle>
+                    <DialogTitle className="text-red-400 font-semibold text-xl">
+                      Click on the "View" button to complete setting up the
+                      profile.
+                    </DialogTitle>
+
                     <DialogDescription>
                       <ClientForm id={id} />
                     </DialogDescription>
@@ -89,14 +94,17 @@ function ResidentOverview() {
               </Dialog>
             )}
 
-            {/* add tasks */}
+            {/* Add Tasks */}
             <Button className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-all">
               ADD HOUSE TASKS
             </Button>
           </div>
 
-          {/* Client list */}
-          {clients.length != 0 ? (
+          {/* residence links */}
+          <ResidenceLinks />
+
+          {/* Client List */}
+          {clients.length !== 0 ? (
             <div
               className="grid grid-cols-1 gap-6 overflow-y-scroll border border-gray-200 rounded-lg shadow-md p-4"
               style={{ maxHeight: '400px', scrollbarGutter: 'stable' }}
@@ -121,8 +129,113 @@ function ResidentOverview() {
               </p>
             </div>
           )}
+
+          {/* Past Shift Contact Notes */}
+          <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Past Shift Contact Notes
+            </h2>
+            <div className="overflow-y-scroll max-h-64">
+              {/** Replace with actual notes data */}
+              <ul className="space-y-2">
+                <li className="p-3 bg-white rounded shadow text-gray-700">
+                  <strong>Shift Date:</strong> 2024-12-15
+                  <br />
+                  <strong>Contact:</strong> Notes about this shift...
+                  <br />
+                  <strong>Staff Initials:</strong> A.D
+                </li>
+                <li className="p-3 bg-white rounded shadow text-gray-700">
+                  <strong>Shift Date:</strong> 2024-12-14
+                  <br />
+                  <strong>Contact:</strong> Another note about a shift...
+                  <br />
+                  <strong>Staff Initials:</strong> A.D
+                </li>
+                {/* Add more notes dynamically */}
+              </ul>
+            </div>
+          </div>
+          {/* Shifts history section */}
+          {userRole === 'admin' && (
+            <section className="bg-white rounded-lg shadow-lg p-6 mt-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Shift History
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left table-auto border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 border-b-2 border-gray-200 font-semibold text-gray-600">
+                        Date
+                      </th>
+                      <th className="px-4 py-2 border-b-2 border-gray-200 font-semibold text-gray-600">
+                        Staff Name
+                      </th>
+                      <th className="px-4 py-2 border-b-2 border-gray-200 font-semibold text-gray-600">
+                        Clock In Time
+                      </th>
+                      <th className="px-4 py-2 border-b-2 border-gray-200 font-semibold text-gray-600">
+                        Clock Out Time
+                      </th>
+                      <th className="px-4 py-2 border-b-2 border-gray-200 font-semibold text-gray-600">
+                        Total Hours
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {
+                        date: '2024-12-21',
+                        staffName: 'Jane Doe',
+                        clockIn: '8:00 AM',
+                        clockOut: '4:00 PM',
+                        totalHours: '8',
+                      },
+                      {
+                        date: '2024-12-20',
+                        staffName: 'John Smith',
+                        clockIn: '9:00 AM',
+                        clockOut: '5:00 PM',
+                        totalHours: '8',
+                      },
+                      {
+                        date: '2024-12-19',
+                        staffName: 'Emily Johnson',
+                        clockIn: '7:00 AM',
+                        clockOut: '3:00 PM',
+                        totalHours: '8',
+                      },
+                    ].map((shift, index) => (
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                      >
+                        <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+                          {shift.date}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+                          {shift.staffName}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+                          {shift.clockIn}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+                          {shift.clockOut}
+                        </td>
+                        <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+                          {shift.totalHours}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
         </div>
       )}
+
       <Outlet />
     </>
   );
