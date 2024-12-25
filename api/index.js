@@ -9,6 +9,7 @@ import userAuthRouter from './user/userRoutes/userAuth.js';
 import residenceRouter from './residence/residenceRoute/residence.js';
 import { isAuthenticated } from './auth/authHelper.js';
 import clientRouter from './client/clientRoutes/clientRoutes.js';
+import logsRouter from './logs/logsRoute.js';
 
 // Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -49,6 +50,7 @@ app.use(express.json());
 app.use('/auth', userAuthRouter); // Authentication routes
 app.use('/res', isAuthenticated, residenceRouter); // Protected residence routes
 app.use('/client', isAuthenticated, clientRouter); // Protected client routes
+app.use('/logs', isAuthenticated, logsRouter);
 
 // Connect to MongoDB
 mongoose

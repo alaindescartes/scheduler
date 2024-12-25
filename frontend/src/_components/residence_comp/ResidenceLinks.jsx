@@ -44,12 +44,21 @@ function ResidenceLinks() {
                   color="blue"
                   onClick={() => handleNavigation('shift-logs')}
                 />
-                <OperationBtn label="Daily Progress Notes" color="blue" />
+                <OperationBtn
+                  label="Daily Progress Notes"
+                  color="blue"
+                  onClick={() => handleNavigation('daily-progress-notes')}
+                />
                 <OperationBtn
                   label="Maintenance and Safety Checklists"
                   color="blue"
+                  onClick={() => handleNavigation('maintenance-checklists')}
                 />
-                <OperationBtn label="Financial Records" color="blue" />
+                <OperationBtn
+                  label="Financial Records"
+                  color="blue"
+                  onClick={() => handleNavigation('financial-records')}
+                />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
