@@ -11,6 +11,7 @@ import ProtectedRoutes from './_components/outlets/ProtectedRoutes.jsx';
 import Residences from './_components/pages/Residences.jsx';
 import ResidentOverview from '@/_components/pages/ResidenceOverview.jsx';
 import ClientProfile from './_components/clientComponents/ClientProfile.jsx';
+import DocumentationOutlet from './_components/outlets/DocumentationOutlet.jsx';
 
 const router = createBrowserRouter([
   {
@@ -18,22 +19,18 @@ const router = createBrowserRouter([
     element: <Navigate to="/login" replace />,
   },
   {
-    // Login page
     path: 'login',
     element: <Login />,
   },
   {
-    // Register page
     path: 'sign-up',
     element: <Register />,
   },
   {
-    // Main page
     path: 'homepage',
     element: <MainOutlet />,
     children: [
       {
-        //Main page route
         element: (
           <ProtectedRoutes>
             <MainPage />
@@ -42,22 +39,38 @@ const router = createBrowserRouter([
         index: true,
       },
       {
-        //residence route
+        path: 'residence',
         element: (
           <ProtectedRoutes>
             <Residences />
           </ProtectedRoutes>
         ),
-        path: 'residence',
       },
       {
+        path: 'visit_residence/:id',
         element: (
           <ProtectedRoutes>
             <ResidentOverview />
           </ProtectedRoutes>
         ),
-        path: 'visit_residence/:id',
-        children: [{ element: <ClientProfile />, path: ':clientId' }],
+        children: [
+          {
+            path: ':clientId',
+            element: (
+              <ProtectedRoutes>
+                <ClientProfile />
+              </ProtectedRoutes>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'documentation/:type',
+        element: (
+          <ProtectedRoutes>
+            <DocumentationOutlet />
+          </ProtectedRoutes>
+        ),
       },
     ],
   },

@@ -5,16 +5,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '../../components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import OperationBtn from './OperationBtn';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function ResidenceLinks() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  console.log('id:', id);
+
+  const handleNavigation = (type) => {
+    console.log(`Navigating to: /homepage/documentation/${type}`);
+    if (!id) {
+      console.error('Error: No id provided in URL.');
+      return;
+    }
+    navigate(`/homepage/documentation/${type}`);
+  };
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-5xl mx-auto mb-6">
       {/* Header */}
@@ -33,18 +39,17 @@ function ResidenceLinks() {
                 Operational Documents
               </AccordionTrigger>
               <AccordionContent className="space-y-2">
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                  Shift Logs
-                </Button>
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                  Daily Progress Notes
-                </Button>
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                  Maintenance and Safety Checklists
-                </Button>
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                  Financial Records
-                </Button>
+                <OperationBtn
+                  label="Shift Logs"
+                  color="blue"
+                  onClick={() => handleNavigation('shift-logs')}
+                />
+                <OperationBtn label="Daily Progress Notes" color="blue" />
+                <OperationBtn
+                  label="Maintenance and Safety Checklists"
+                  color="blue"
+                />
+                <OperationBtn label="Financial Records" color="blue" />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -56,15 +61,9 @@ function ResidenceLinks() {
                 Routine Logs
               </AccordionTrigger>
               <AccordionContent className="space-y-2">
-                <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  Activity Logs
-                </Button>
-                <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  Visitation Logs
-                </Button>
-                <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  Food Tracker
-                </Button>
+                <OperationBtn label="Activity Logs" color="green" />
+                <OperationBtn label="Visitation Logs" color="green" />
+                <OperationBtn label="Food Tracker" color="green" />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -76,42 +75,18 @@ function ResidenceLinks() {
               Incident Reports
             </AccordionTrigger>
             <AccordionContent className="mt-2 space-y-2">
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Behavioral Incident
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Medical Incident
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Medication Error
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Property Damage
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Resident Injury
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Staff Injury
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Emergency Response
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Missing Person
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Safety Hazard
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Policy Violation
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Visitor Incident
-              </Button>
-              <Button className="w-full bg-red-500 border border-red-600 text-white rounded-md shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                Other
-              </Button>
+              <OperationBtn label="Behavioral Incident" color="red" />
+              <OperationBtn label="Medical Incident" color="red" />
+              <OperationBtn label="Medication Error" color="red" />
+              <OperationBtn label="Property Damage" color="red" />
+              <OperationBtn label="Resident Injury" color="red" />
+              <OperationBtn label="Staff Injury" color="red" />
+              <OperationBtn label="Emergency Response" color="red" />
+              <OperationBtn label="Missing Person" color="red" />
+              <OperationBtn label="Safety Hazard" color="red" />
+              <OperationBtn label="Policy Violation" color="red" />
+              <OperationBtn label="Visitor Incident" color="red" />
+              <OperationBtn label="Other" color="red" />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
